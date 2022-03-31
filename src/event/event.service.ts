@@ -10,6 +10,9 @@ export class EventService {
       case 'item:added':
         this.itemService.create(event.event_data);
         break;
+      case 'item:completed':
+          this.itemService.create(event.event_data);
+          break;
       default:
         break;
     }
