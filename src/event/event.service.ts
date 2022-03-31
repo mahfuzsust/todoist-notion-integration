@@ -13,6 +13,9 @@ export class EventService {
       case 'item:completed':
           this.itemService.create(event.event_data);
           break;
+      case 'item:updated':
+          this.itemService.create(event.event_data);
+          break;
       default:
         break;
     }

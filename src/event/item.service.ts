@@ -17,6 +17,15 @@ export class ItemService {
         database_id: configuration.NOTION_DATABASE,
       },
       properties: {
+        id: {
+          rich_text: [
+            {
+              text: {
+                content: item.id.toString(),
+              },
+            },
+          ],
+        },
         Title: {
           title: [
             {
@@ -38,14 +47,26 @@ export class ItemService {
         Status: {
           checkbox: item.checked === 1,
         },
-        Completed: {
-          date: {
-            start: item.date_completed,
+        'Completed At': {
+          date: item.date_completed ? { start: item.date_completed } : null,
+        },
+        Priority: {
+          select: {
+            name: this.getPriority(item.priority),
           },
         },
       },
     });
     console.log(response1);
+  }
+  getPriority(priority: number): string {
+    const obj = {
+      '1': 'p4',
+      '2': 'p3',
+      '3': 'p2',
+      '4': 'p1',
+    };
+    return obj[priority];
   }
   update(item: Item) {
     return null;
