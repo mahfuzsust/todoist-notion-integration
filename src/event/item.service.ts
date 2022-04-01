@@ -12,7 +12,7 @@ export class ItemService {
   async create(item: Item) {
     await this.client.pages.create({
       parent: {
-        database_id: configuration.NOTION_DATABASE,
+        database_id: configuration.NOTION_TASKS_DATABASE,
       },
       properties: {
         id: {
@@ -67,7 +67,7 @@ export class ItemService {
   }
   async getPageByTodoistId(id: string): Promise<string> {
     const response = await this.client.databases.query({
-      database_id: configuration.NOTION_DATABASE,
+      database_id: configuration.NOTION_TASKS_DATABASE,
       filter: {
         property: 'id',
         rich_text: {
