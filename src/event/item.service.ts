@@ -180,8 +180,8 @@ export class ItemService {
   }
   async delete(item: Item) {
     const pageId = await this.getPageByTodoistId(
-      item.id.toString(),
       configuration.NOTION_TASKS_DATABASE,
+      item.id.toString(),
     );
     await this.client.pages.update({
       page_id: pageId,
@@ -190,8 +190,8 @@ export class ItemService {
   }
   async complete(item: Item) {
     const pageId = await this.getPageByTodoistId(
-      item.id.toString(),
       configuration.NOTION_TASKS_DATABASE,
+      item.id.toString(),
     );
     await this.client.pages.update({
       page_id: pageId,
@@ -207,8 +207,8 @@ export class ItemService {
   }
   async uncomplete(item: Item) {
     const pageId = await this.getPageByTodoistId(
-      item.id.toString(),
       configuration.NOTION_TASKS_DATABASE,
+      item.id.toString(),
     );
     await this.client.pages.update({
       page_id: pageId,
