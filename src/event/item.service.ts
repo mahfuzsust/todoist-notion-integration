@@ -10,9 +10,7 @@ export class ItemService {
     this.client = new Client({ auth: configuration.NOTION_TOKEN });
   }
   async create(item: Item) {
-    console.log(item);
-
-    const response1 = await this.client.pages.create({
+    await this.client.pages.create({
       parent: {
         database_id: configuration.NOTION_DATABASE,
       },
@@ -57,7 +55,6 @@ export class ItemService {
         },
       },
     });
-    console.log(response1);
   }
   getPriority(priority: number): string {
     const obj = {
@@ -68,16 +65,89 @@ export class ItemService {
     };
     return obj[priority];
   }
-  update(item: Item) {
-    return null;
+  async getPageByTodoistId(id: string): Promise<string> {
+    const response = await this.client.databases.query({
+      database_id: configuration.NOTION_DATABASE,
+      filter: {
+        property: 'id',
+        rich_text: {
+          equals: id,
+        },
+      },
+    });
+
+    if (response && response.results.length > 0) {
+      return response.results[0].id;
+    }
+    return '';
   }
-  delete(item: Item) {
-    return null;
+  async update(item: Item) {
+    const pageId = await this.getPageByTodoistId(item.id.toString());
+    await this.client.pages.update({
+      page_id: pageId,
+      properties: {
+        Title: {
+          title: [
+            {
+              text: {
+                content: item.content,
+              },
+            },
+          ],
+        },
+        Description: {
+          rich_text: [
+            {
+              text: {
+                content: item.description,
+              },
+            },
+          ],
+        },
+        Priority: {
+          select: {
+            name: this.getPriority(item.priority),
+          },
+        },
+        Status: {
+          checkbox: item.checked === 1,
+        },
+      },
+    });
   }
-  complete(item: Item) {
-    return null;
+  async delete(item: Item) {
+    const pageId = await this.getPageByTodoistId(item.id.toString());
+    await this.client.pages.update({
+      page_id: pageId,
+      archived: true,
+    });
   }
-  uncomplete(item: Item) {
-    return null;
+  async complete(item: Item) {
+    const pageId = await this.getPageByTodoistId(item.id.toString());
+    await this.client.pages.update({
+      page_id: pageId,
+      properties: {
+        Status: {
+          checkbox: true,
+        },
+        'Completed At': {
+          date: { start: item.date_completed },
+        },
+      },
+    });
+  }
+  async uncomplete(item: Item) {
+    const pageId = await this.getPageByTodoistId(item.id.toString());
+    await this.client.pages.update({
+      page_id: pageId,
+      properties: {
+        Status: {
+          checkbox: false,
+        },
+        'Completed At': {
+          date: null,
+        },
+      },
+    });
   }
 }
