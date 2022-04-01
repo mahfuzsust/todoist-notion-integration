@@ -29,3 +29,28 @@ export class Item {
 export class Relation {
   id: string;
 }
+
+export class Project {
+  id: number;
+  legacy_id: number;
+  name: string;
+  color: number;
+  parent_id: null;
+  child_order: number;
+  collapsed: number;
+  shared: boolean;
+  legacy_parent_id: null;
+  sync_id: null;
+  is_deleted: number;
+  is_archived: number;
+  is_favorite: number;
+}
+
+export class Label {
+  id: number;
+  name: string;
+  color: number;
+  item_order: number;
+  is_deleted: number;
+  is_favorite: number;
+}
