@@ -25,3 +25,7 @@ export class Item {
   date_added: string;
   date_completed?: string;
 }
+
+export class Relation {
+  id: string;
+}

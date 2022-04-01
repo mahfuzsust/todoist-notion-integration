@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Client } from '@notionhq/client';
 import configuration from 'src/configuration/configuration';
-import { Item } from './entities/item.entity';
+import { Item, Relation } from './entities/item.entity';
 
 @Injectable()
 export class ItemService {
@@ -10,6 +10,11 @@ export class ItemService {
     this.client = new Client({ auth: configuration.NOTION_TOKEN });
   }
   async create(item: Item) {
+    const projectId = await this.getPageByTodoistId(
+      configuration.NOTION_PROJECTS_DATABASE,
+      item.project_id.toString(),
+    );
+    const labels = await this.getLabels(item.labels);
     await this.client.pages.create({
       parent: {
         database_id: configuration.NOTION_TASKS_DATABASE,
@@ -53,7 +58,47 @@ export class ItemService {
             name: this.getPriority(item.priority),
           },
         },
+        Project: {
+          relation: [
+            {
+              id: projectId,
+            },
+          ],
+        },
+        Label: {
+          relation: labels,
+        },
       },
+    });
+  }
+  async getLabels(labels: number[]): Promise<Relation[]> {
+    return new Promise((resolve, reject) => {
+      if (labels.length == 0) {
+        return resolve([]);
+      }
+      const promises = [];
+      const relations: Relation[] = [];
+      labels.forEach((label) => {
+        promises.push(
+          this.getPageByTodoistId(
+            configuration.NOTION_LABELS_DATABASE,
+            label.toString(),
+          ),
+        );
+      });
+      Promise.all(promises)
+        .then((value) => {
+          value.forEach((item) => {
+            relations.push({
+              id: item,
+            });
+          });
+          return resolve(relations);
+        })
+        .catch((err) => {
+          console.error(err);
+          reject(err);
+        });
     });
   }
   getPriority(priority: number): string {
@@ -65,9 +110,9 @@ export class ItemService {
     };
     return obj[priority];
   }
-  async getPageByTodoistId(id: string): Promise<string> {
+  async getPageByTodoistId(parentId: string, id: string): Promise<string> {
     const response = await this.client.databases.query({
-      database_id: configuration.NOTION_TASKS_DATABASE,
+      database_id: parentId,
       filter: {
         property: 'id',
         rich_text: {
@@ -82,7 +127,10 @@ export class ItemService {
     return '';
   }
   async update(item: Item) {
-    const pageId = await this.getPageByTodoistId(item.id.toString());
+    const pageId = await this.getPageByTodoistId(
+      item.id.toString(),
+      configuration.NOTION_TASKS_DATABASE,
+    );
     await this.client.pages.update({
       page_id: pageId,
       properties: {
@@ -116,14 +164,20 @@ export class ItemService {
     });
   }
   async delete(item: Item) {
-    const pageId = await this.getPageByTodoistId(item.id.toString());
+    const pageId = await this.getPageByTodoistId(
+      item.id.toString(),
+      configuration.NOTION_TASKS_DATABASE,
+    );
     await this.client.pages.update({
       page_id: pageId,
       archived: true,
     });
   }
   async complete(item: Item) {
-    const pageId = await this.getPageByTodoistId(item.id.toString());
+    const pageId = await this.getPageByTodoistId(
+      item.id.toString(),
+      configuration.NOTION_TASKS_DATABASE,
+    );
     await this.client.pages.update({
       page_id: pageId,
       properties: {
@@ -137,7 +191,10 @@ export class ItemService {
     });
   }
   async uncomplete(item: Item) {
-    const pageId = await this.getPageByTodoistId(item.id.toString());
+    const pageId = await this.getPageByTodoistId(
+      item.id.toString(),
+      configuration.NOTION_TASKS_DATABASE,
+    );
     await this.client.pages.update({
       page_id: pageId,
       properties: {
