@@ -128,8 +128,8 @@ export class ItemService {
   }
   async update(item: Item) {
     const pageId = await this.getPageByTodoistId(
-      item.id.toString(),
       configuration.NOTION_TASKS_DATABASE,
+      item.id.toString(),
     );
     const projectId = await this.getPageByTodoistId(
       configuration.NOTION_PROJECTS_DATABASE,
