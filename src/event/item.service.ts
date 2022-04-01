@@ -131,6 +131,11 @@ export class ItemService {
       item.id.toString(),
       configuration.NOTION_TASKS_DATABASE,
     );
+    const projectId = await this.getPageByTodoistId(
+      configuration.NOTION_PROJECTS_DATABASE,
+      item.project_id.toString(),
+    );
+    const labels = await this.getLabels(item.labels);
     await this.client.pages.update({
       page_id: pageId,
       properties: {
@@ -159,6 +164,16 @@ export class ItemService {
         },
         Status: {
           checkbox: item.checked === 1,
+        },
+        Project: {
+          relation: [
+            {
+              id: projectId,
+            },
+          ],
+        },
+        Label: {
+          relation: labels,
         },
       },
     });
