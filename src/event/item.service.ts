@@ -131,6 +131,9 @@ export class ItemService {
       configuration.NOTION_TASKS_DATABASE,
       item.id.toString(),
     );
+    if (!pageId) {
+      await this.create(item);
+    }
     const projectId = await this.getPageByTodoistId(
       configuration.NOTION_PROJECTS_DATABASE,
       item.project_id.toString(),
@@ -183,6 +186,11 @@ export class ItemService {
       configuration.NOTION_TASKS_DATABASE,
       item.id.toString(),
     );
+
+    if (!pageId) {
+      await this.create(item);
+    }
+
     await this.client.pages.update({
       page_id: pageId,
       archived: true,
@@ -193,6 +201,11 @@ export class ItemService {
       configuration.NOTION_TASKS_DATABASE,
       item.id.toString(),
     );
+
+    if (!pageId) {
+      await this.create(item);
+    }
+
     await this.client.pages.update({
       page_id: pageId,
       properties: {
@@ -210,6 +223,11 @@ export class ItemService {
       configuration.NOTION_TASKS_DATABASE,
       item.id.toString(),
     );
+
+    if (!pageId) {
+      await this.create(item);
+    }
+
     await this.client.pages.update({
       page_id: pageId,
       properties: {
