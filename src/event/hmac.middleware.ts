@@ -1,4 +1,9 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NestMiddleware,
+} from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { createHmac } from 'crypto';
 import configuration from 'src/configuration/configuration';
@@ -9,11 +14,10 @@ export class HMACMiddleware implements NestMiddleware {
     const hash = createHmac('sha256', configuration.TODOIST_CLIENT_SECRET)
       .update(JSON.stringify(req.body))
       .digest('base64');
-
-    console.log('X-Todoist-Hmac-SHA256:', req.header('X-Todoist-Hmac-SHA256'));
-    console.log('Hash:', hash);
-    console.log(hash === req.header('X-Todoist-Hmac-SHA256'));
-
-    next();
+    if (hash === req.header('X-Todoist-Hmac-SHA256')) {
+      next();
+    } else {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
   }
 }
