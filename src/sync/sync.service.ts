@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import configuration from 'src/configuration/configuration';
 import { TodoistApi } from '@doist/todoist-api-typescript';
 import { PageService } from 'src/common/page.service';
@@ -10,9 +10,7 @@ export class SyncService {
   constructor(
     private readonly pageService: PageService,
     private http: HttpService,
-  ) {
-    this.todoistApi = new TodoistApi(configuration.TODOIST_API_TOKEN);
-  }
+  ) {}
   async syncProjects() {
     const projects = await this.todoistApi.getProjects();
     projects.forEach(async (project) => {
@@ -49,6 +47,9 @@ export class SyncService {
   }
   async sync(code: string) {
     const token = await this.getTodoistToken(code);
+    if (!token) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
     this.todoistApi = new TodoistApi(token);
     await this.syncProjects();
     await this.syncLabels();
