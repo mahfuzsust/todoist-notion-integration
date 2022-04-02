@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { Client } from '@notionhq/client';
 import configuration from 'src/configuration/configuration';
 import { TodoistApi } from '@doist/todoist-api-typescript';
 import { PageService } from 'src/common/page.service';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class SyncService {
-  private client: Client;
   private todoistApi: TodoistApi;
-  constructor(private readonly pageService: PageService) {
+  constructor(
+    private readonly pageService: PageService,
+    private http: HttpService,
+  ) {
     this.todoistApi = new TodoistApi(configuration.TODOIST_API_TOKEN);
-    this.client = new Client({ auth: configuration.NOTION_TOKEN });
   }
   async syncProjects() {
     const projects = await this.todoistApi.getProjects();
@@ -46,8 +47,29 @@ export class SyncService {
       }
     });
   }
-  async sync() {
+  async sync(code: string) {
+    const token = await this.getTodoistToken(code);
+    this.todoistApi = new TodoistApi(token);
     await this.syncProjects();
     await this.syncLabels();
+  }
+
+  async getTodoistToken(code: string): Promise<any> {
+    return new Promise<string>((resolve, reject) => {
+      try {
+        const body = {
+          client_id: configuration.TODOIST_CLIENT_ID,
+          client_secret: configuration.TODOIST_CLIENT_SECRET,
+          code: code,
+        };
+        return this.http
+          .post(configuration.TODOIST_OAUTH_URL, body)
+          .subscribe((x) => {
+            resolve(x.data['access_token']);
+          });
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 }
