@@ -38,10 +38,36 @@ export class SyncService {
         configuration.NOTION_TASKS_DATABASE,
         task.id.toString(),
       );
+      const item: Item = {
+        id: task.id,
+        date_added: task.created,
+        project_id: task.projectId,
+        content: task.content,
+        description: task.description,
+        priority: task.priority,
+        checked: task.completed ? 1 : 0,
+        labels: task.labelIds,
+        legacy_id: 0,
+        user_id: 0,
+        legacy_project_id: 0,
+        due: null,
+        parent_id: null,
+        legacy_parent_id: null,
+        child_order: 0,
+        section_id: null,
+        day_order: 0,
+        collapsed: 0,
+        added_by_uid: 0,
+        assigned_by_uid: 0,
+        responsible_uid: null,
+        in_history: 0,
+        is_deleted: 0,
+        sync_id: null,
+      };
       if (!pageId) {
-        await this.itemService.create(task as unknown as Item);
+        await this.itemService.create(item);
       } else {
-        await this.itemService.update(task as unknown as Item);
+        await this.itemService.update(item);
       }
     });
   }
