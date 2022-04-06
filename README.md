@@ -1,6 +1,10 @@
 # todoist-notion-integration
 Tasks from Todoist synced with Notion database where view integration is applicatble
 
+
+## Sync
+https://todoist.com/oauth/authorize?client_id=<client_id>&scope=data:read&state=mysecretstring
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
