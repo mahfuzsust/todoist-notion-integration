@@ -211,7 +211,7 @@ export class ItemService {
     if (item.due != null && item.due.is_recurring) {
       const d = new Date();
       completedDate = d.toISOString();
-      id = `${id}-${d.getTime()}`;
+      id = `${d.getTime()}`;
     }
 
     await this.client.pages.update({
