@@ -1,3 +1,10 @@
+export class Due {
+  date: string;
+  timezone: null;
+  string: string;
+  lang: string;
+  is_recurring: boolean;
+}
 export class Item {
   id: number;
   legacy_id: number;
@@ -7,7 +14,7 @@ export class Item {
   content: string;
   description: string;
   priority: number;
-  due: null;
+  due: Due;
   parent_id: null;
   legacy_parent_id: null;
   child_order: number;

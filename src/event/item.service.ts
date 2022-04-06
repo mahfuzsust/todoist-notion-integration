@@ -206,14 +206,31 @@ export class ItemService {
       await this.create(item);
     }
 
+    let completedDate = item.date_completed;
+    let id = item.id.toString();
+    if (item.due != null && item.due.is_recurring) {
+      const d = new Date();
+      completedDate = d.toISOString();
+      id = `${id}-${d.getTime()}`;
+    }
+
     await this.client.pages.update({
       page_id: pageId,
       properties: {
+        id: {
+          rich_text: [
+            {
+              text: {
+                content: id,
+              },
+            },
+          ],
+        },
         Status: {
           checkbox: true,
         },
         'Completed At': {
-          date: { start: item.date_completed },
+          date: { start: completedDate },
         },
       },
     });
