@@ -50,13 +50,13 @@ export class EventService {
         break;
     }
   }
-  async createProject(event_data: any) {
+  async createProject(event_data: any): Promise<void> {
     await this.pageService.createPage(
       event_data,
       configuration.NOTION_PROJECTS_DATABASE,
     );
   }
-  async updateProject(event_data: any) {
+  async updateProject(event_data: any): Promise<void> {
     const pageId = await this.pageService.getPageByTodoistId(
       configuration.NOTION_PROJECTS_DATABASE,
       event_data.id.toString(),
@@ -65,7 +65,7 @@ export class EventService {
       await this.pageService.updatePage(event_data, pageId);
     }
   }
-  async deleteProject(event_data: any) {
+  async deleteProject(event_data: any): Promise<void> {
     const pageId = await this.pageService.getPageByTodoistId(
       configuration.NOTION_PROJECTS_DATABASE,
       event_data.id.toString(),
@@ -74,13 +74,13 @@ export class EventService {
       await this.pageService.deletePage(pageId);
     }
   }
-  async createLabel(event_data: any) {
+  async createLabel(event_data: any): Promise<void> {
     await this.pageService.createPage(
       event_data,
       configuration.NOTION_LABELS_DATABASE,
     );
   }
-  async updateLabel(event_data: any) {
+  async updateLabel(event_data: any): Promise<void> {
     const pageId = await this.pageService.getPageByTodoistId(
       configuration.NOTION_LABELS_DATABASE,
       event_data.id.toString(),
@@ -89,7 +89,7 @@ export class EventService {
       await this.pageService.updatePage(event_data, pageId);
     }
   }
-  async deleteLabel(event_data: any) {
+  async deleteLabel(event_data: any): Promise<void> {
     const pageId = await this.pageService.getPageByTodoistId(
       configuration.NOTION_LABELS_DATABASE,
       event_data.id.toString(),

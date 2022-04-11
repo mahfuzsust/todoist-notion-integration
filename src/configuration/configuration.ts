@@ -10,4 +10,5 @@ export default {
   TODOIST_OAUTH_URL: process.env.TODOIST_OAUTH_URL,
   TODOIST_CLIENT_ID: process.env.TODOIST_CLIENT_ID,
   TIMEZONE: process.env.TIMEZONE,
+  REDISCLOUD_URL: process.env.REDISCLOUD_URL,
 };

@@ -184,14 +184,12 @@ export class ItemService {
       item.id.toString(),
     );
 
-    if (!pageId) {
-      await this.create(item);
+    if (pageId) {
+      await this.client.pages.update({
+        page_id: pageId,
+        archived: true,
+      });
     }
-
-    await this.client.pages.update({
-      page_id: pageId,
-      archived: true,
-    });
   }
   async complete(item: Item) {
     const pageId = await this.getPageByTodoistId(
