@@ -192,21 +192,22 @@ export class ItemService {
     }
   }
   async complete(item: Item) {
+    let id = item.id.toString();
+    if (!id) {
+      return;
+    }
+
     const pageId = await this.getPageByTodoistId(
       configuration.NOTION_TASKS_DATABASE,
-      item.id.toString(),
+      id,
     );
 
     if (!pageId) {
       await this.create(item);
     }
 
-    let id = pageId;
-
-    const d = new Date();
-
     if (item.due != null && item.due.is_recurring) {
-      id = `${d.getTime()}`;
+      id = pageId;
     }
     await this.client.pages.update({
       page_id: pageId,
