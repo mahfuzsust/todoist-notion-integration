@@ -50,11 +50,6 @@ export class ItemService {
         Status: {
           checkbox: item.checked === 1,
         },
-        'Completed At': {
-          date: item.date_completed
-            ? { start: item.date_completed, time_zone: 'Asia/Qatar' }
-            : null,
-        },
         Priority: {
           select: {
             name: this.getPriority(item.priority),
@@ -208,7 +203,6 @@ export class ItemService {
       await this.create(item);
     }
 
-    let completedDate = item.date_completed;
     let id = pageId;
 
     const d = new Date();
@@ -216,11 +210,6 @@ export class ItemService {
     if (item.due != null && item.due.is_recurring) {
       id = `${d.getTime()}`;
     }
-
-    if (!completedDate) {
-      completedDate = d.toISOString();
-    }
-
     await this.client.pages.update({
       page_id: pageId,
       properties: {
@@ -235,9 +224,6 @@ export class ItemService {
         },
         Status: {
           checkbox: true,
-        },
-        'Completed At': {
-          date: { start: completedDate, time_zone: 'Asia/Qatar' },
         },
       },
     });
@@ -257,9 +243,6 @@ export class ItemService {
       properties: {
         Status: {
           checkbox: false,
-        },
-        'Completed At': {
-          date: null,
         },
       },
     });
