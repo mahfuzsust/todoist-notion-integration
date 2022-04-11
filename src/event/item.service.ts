@@ -51,7 +51,9 @@ export class ItemService {
           checkbox: item.checked === 1,
         },
         'Completed At': {
-          date: item.date_completed ? { start: item.date_completed } : null,
+          date: item.date_completed
+            ? { start: item.date_completed, time_zone: 'Asia/Qatar' }
+            : null,
         },
         Priority: {
           select: {
@@ -207,11 +209,16 @@ export class ItemService {
     }
 
     let completedDate = item.date_completed;
-    let id = item.id.toString();
+    let id = pageId;
+
+    const d = new Date();
+
     if (item.due != null && item.due.is_recurring) {
-      const d = new Date();
-      completedDate = d.toISOString();
       id = `${d.getTime()}`;
+    }
+
+    if (!completedDate) {
+      completedDate = d.toISOString();
     }
 
     await this.client.pages.update({
@@ -230,7 +237,7 @@ export class ItemService {
           checkbox: true,
         },
         'Completed At': {
-          date: { start: completedDate },
+          date: { start: completedDate, time_zone: 'Asia/Qatar' },
         },
       },
     });
